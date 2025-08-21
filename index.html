@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Personal Expense Tracker</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; }
+    input, button { padding: 8px; margin: 5px; }
+    #output { margin-top: 20px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h2>🧾 Personal Expense Tracker</h2>
+
+  <input type="text" id="message" placeholder="e.g., I spent 100 on groceries" size="50">
+  <button onclick="addTransaction()">Add</button>
+  <button onclick="getSummary()">View Summary</button>
+  <button onclick="resetData()">Reset</button>
+
+  <div id="output"></div>
+
+  <script>
+    const apiBase = "http://127.0.0.1:8000";  // Update if using different host
+
+    async function addTransaction() {
+      const message = document.getElementById("message").value;
+      const res = await fetch(`${apiBase}/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+      });
+      const data = await res.json();
+      document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+    }
+
+    async function getSummary() {
+      const res = await fetch(`${apiBase}/summary`);
+      const data = await res.json();
+      document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+    }
+
+    async function resetData() {
+      const confirmed = confirm("Are you sure you want to reset all data?");
+      if (!confirmed) return;
+      const res = await fetch(`${apiBase}/reset`, { method: "POST" });
+      const data = await res.json();
+      document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>
